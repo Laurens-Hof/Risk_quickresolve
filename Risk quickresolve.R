@@ -1,27 +1,29 @@
+#environment hygiene
 rm(list= ls())
 
 #take in the number of attacking and defending units
 defense <- readline(prompt = "Number of units defending:")
 attack <- readline(prompt = "Number of units attacking:")
-defenseairfields <- readline(prompt = 'Does the defender have an airfield? Type "yes" or "no"')
-attackairfields <- readline(prompt = 'Does the attacker have airfields? Type "yes" or "no"')
+
 #convert into integers
 defense <- as.integer(defense)
 attack <- as.integer(attack)
-defenseairfields <- ifelse(defenseairfields == "yes", 1, 0)
-attackairfields <- ifelse(attackairfields == "yes", 1, 0)
 
-
+#define the function that will do all the heavy lifting
 resolveround <- function(attack, defense){
-  attackdice <- min(3 + attackairfields, attack)
-  defensedice <- min(2 + defenseairfields, defense)
+  #The attacker has as many dice as units, up to a maximum of 3.
+  attackdice <- min(3, attack)
+  #The maximum is 2 for the defenders
+  defensedice <- min(2, defense)
   
+  #roll the dice, and sort them in descending order so we can easily compare the highest dice from each side
   attackrolls <- floor(runif(attackdice, min =1, max = 7))
   defenserolls <- floor(runif(defensedice, min = 1, max = 7))
-  
   sort(defenserolls, decreasing = TRUE)
   sort(attackrolls, decreasing = TRUE)
   
+  #if an attacking die rolls strictly higher than its corresponding-rank defensive die, the defender loses a unit
+  #otherwise, the attacker loses a unit. 
   for (i in 1:defensedice){
     if(attackrolls[i] > defenserolls[i]){
       defense <- defense -1
@@ -30,10 +32,13 @@ resolveround <- function(attack, defense){
     }
   }
   
+  #return output based on cases. If no attackers remain, defender wins
   if(attack == 0){
     print(c("Defender wins. Units remaining:", defense))
+  #if no defenders remain, the attacker wins 
   }else if (defense == 0){
     print(c("Attacker wins. Units remaining:", attack))
+  #otherwise, the attacker can choose to continue the attack, in which case this function will be called recursively
   }else if(attack > 0 & defense > 0){
     print(c("Attacking units remaining:", attack))
     print(c("Defending units remaining:", defense))
