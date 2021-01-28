@@ -1,4 +1,4 @@
-# Risk_quickresolve
+# A Risk quickresolve script
 
 You know how games of Risk can take forever, especially late-game when you spend 15 minutes rolling dice to resolve *one* battle? This R program can resolve large Risk battles in no time at all, and is exactly what you need in such a case!
 
